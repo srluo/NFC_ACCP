@@ -39,7 +39,7 @@ uint8_t listFolder;
 uint8_t listTrack;
 int hpGame = 0;
 int wpGame = 0;
-int vol = 15;
+int vol = 10;
 int err = 1;
 int rsp_value;
 bool f_loop = false;
@@ -49,8 +49,9 @@ bool f_newTag = false;
 bool f_validRTC = true;
 bool f_gamePlaying = false;
 bool f_eqOn = false;
+bool f_tagPGMR = false;
 
-//#define DEBUG
+#define DEBUG
 //******* Registers of SICRE31/RE41*******************
 #define COMMAND_REG 0x01
 #define FIFO_DATA_REG 0x02
@@ -322,6 +323,7 @@ void lowPowerHandler() {
         return;
     }
     BATT_CHK_TIME = 20000;
+    //ss = ss + "[B:" + String(battLife) + "%]";
     printTime();
   }
 }
@@ -372,10 +374,10 @@ void setup(){
   }
   pcf.init();//initialize the clock
   if (pcf.checkClockIntegrity()) {//Check clock integrity. 
-      sl2 = sl2 + ", RTC=OK";
+      sl2 = "-RTC=OK";
       smartVol();
   } else {
-      sl2 = sl2 + ", RTC=NG";
+      sl2 = "-RTC=NG";
       f_validRTC = false;
       ss = "System is some fault...";
   } 
@@ -390,7 +392,6 @@ void setup(){
     digitalWrite(LED_R, LOW);
   } else {
     sl3 = "-MP3/SD is ready..";
-    myDFPlayer.normal();
     delay(1000);
     myDFPlayer.setTimeOut(1000); // 設定通訊逾時為500ms
     myDFPlayer.volume(vol);  //Set volume value. From 0 to 30
@@ -402,8 +403,7 @@ void setup(){
   analogReference(AR_DEFAULT);
   lowPowerHandler();
   Serial.println("Battery checking");
-  sl2 = "-BATT=" + String(battLife) + "%";
-  
+  sl2 = sl2 + ", BATT=" + String(battLife) + "%";
   drawTXT(sl1,sl2,sl3);
   //while (digitalRead(BTN) == HIGH) { };
   delay(2000);
@@ -466,7 +466,7 @@ void loop()
                     char tt[5]; 
                     sprintf(tt, "%02X/%02X", t_mem[0], t_mem[1]);
                     st = st + String(tt) +"] ";
-                    ss = "Read Tag: OK, Batt=" + String(battLife) + "%";;
+                    ss = "Read Tag: OK..";
                     printTime();
                     draw(TIME, 0xFF);
                 } else if (t_mem[1] < 1 || t_mem[2] < 1) {
@@ -511,6 +511,8 @@ void loop()
             delay(100);
             tag_in = 0;
             digitalWrite(LED_B, HIGH);
+            st = FW_VERSION;
+            ss= "Ready to scan..[B:" + String(battLife) + "%]";
             state = NOP;
         }
       }
@@ -554,7 +556,7 @@ void loop()
                       ss = "playing now..[B:" + String(battLife) + "%]";
                       draw(TRK, 0x01);
                       delay(2000);
-                      sysDelay = 5000;
+                      sysDelay = 2000;
                   } else {
                       maxTrack = t_mem[1] + t_mem[2] -1; 
                       if (numTrack == maxTrack) {
@@ -570,7 +572,7 @@ void loop()
                       delay(1000);
                       if (chkState() > 0) {
                           f_nowPlaying = true; draw(TRK, 0x01);
-                          sysDelay = 5000;
+                          sysDelay = 2000;
                       } else {
                           f_nowPlaying = false;
                           ss = "Can't play.."; draw(NG_ERR, 0x03);
@@ -608,7 +610,7 @@ void loop()
                       ss = "playing now..[B:" + String(battLife) + "%]";
                       draw(TRK, 0x01);
                       delay(2000);
-                      sysDelay = 5000;
+                      sysDelay = 2000;
                   } else { 
                       if (numTrack == maxTrack) {
                           numTrack = 1;
@@ -716,7 +718,7 @@ void loop()
                       numTrack = ran[currTrack];
                       draw(TRK, 0x01);
                       delay(2000);
-                      sysDelay = 5000;
+                      sysDelay = 2000;
                   } else { 
                       currTrack ++;
                       if (currTrack > maxTrack) {
@@ -751,7 +753,7 @@ void loop()
                   startListAddr = t_mem[0];
                   countList = t_mem[2];
                   offsetList = currListAddr - startListAddr;
-                  ss = "New playlist loading..";
+                  ss = "Playlist loading..[B:" + String(battLife) + "%]";
                   if (t2_ReadPage(currListAddr, rxbuf)) {
                       listFolder = rxbuf[0];
                       listTrack = rxbuf[1];
@@ -790,7 +792,7 @@ void loop()
                   } else { 
                       if (countList == 0) {
                           t_mem[1] = startListAddr;
-                          ss = "play done.."; 
+                          ss = "play done..[B:" + String(battLife) + "%]"; 
                           draw(TIME, 0xFF);
                           t2_WritePage(addrTkt, t_mem);
                           f_newTag = 0;
@@ -803,7 +805,7 @@ void loop()
                               myDFPlayer.playFolder(listFolder, listTrack);
                               delay(1000); //must wait
                               if (chkState() > 0) {
-                                  ss = "play next..";
+                                  ss = "play next..[B:" + String(battLife) + "%]";
                                   t_mem[1] = currListAddr;
                                   countList --; offsetList++;
                                   f_nowPlaying = true;
@@ -848,7 +850,7 @@ void loop()
               } 
               quizGame();
               st = FW_VERSION;
-              ss="Ready to scan.. [" + String(battLife) + "%]";
+              ss="Ready to scan..[B:" + String(battLife) + "%]";
               draw(SCAN, 0xFF);
               delay(2000);
               state = NOP;
@@ -863,7 +865,8 @@ void loop()
                       if (numTrack > maxTrack) numTrack = 1;
                       st = "Folder/track = [" + String(numFolder) + "/";
                       st = st + String(numTrack) + "]";
-                      ss = "play next..";draw(TIME, 0xFF);
+                      ss = "play next..[B:" + String(battLife) + "%]";
+                      draw(TIME, 0xFF);
                       myDFPlayer.playFolder(numFolder, numTrack);
                       t_mem[1] = numTrack;
                       t2_WritePage(addrTkt, t_mem);
@@ -872,7 +875,8 @@ void loop()
                       numTrack = t_mem[1];
                       st = "Folder/track = [" + String(numFolder) + "/";
                       st = st + String(numTrack) + "]";
-                      ss = "playing now..";draw(TIME, 0xFF);
+                      ss = "playing now..[B:" + String(battLife) + "%]";
+                      draw(TIME, 0xFF);
                       myDFPlayer.playFolder(numFolder, numTrack);
                       break;
                   }
@@ -903,21 +907,39 @@ void loop()
               case 0xA1: {
                  if (f_newTag) delay(500); 
                  fastRTC();
+                 sysDelay = 0;
                  state = SCAN;
                  break;
               }
               case 0xA2: {
                 if (f_newTag) delay(500); 
                 slowRTC();
+                sysDelay = 0;
                 state = SCAN;
                 break;
               }
+
+              case 0xA8: { 
+                if (!f_tagPGMR) {
+                    if (f_nowPlaying) myDFPlayer.pause();
+                    rfOn();
+                    Serial.println("BTN Press, IN tagPGMR");
+                    f_tagPGMR = true;
+                    tagPGM();
+                }
+                sysDelay = 500;
+                st = FW_VERSION;
+                state = NOP;
+                break;
+              }
+              
               case 0xAA: {
                 if (f_newTag) {
                  state = SLEEP;
                  break;
                 }
               }
+              
               case 0xAF: { //set sleep timer
                 st = "Set Sleep Timer (min.)";
                 switch (sleepTimer) {
@@ -1002,7 +1024,7 @@ void loop()
             case DFPlayerPlayFinished: {
                 f_nowPlaying = false;
                 st = FW_VERSION;
-                ss="Ready to scan.. [" + String(battLife) + "%]";
+                ss="Ready to scan..[B:" + String(battLife) + "%]";
                 draw(SCAN, 0xFF);
                 sysDelay = 500;
                 break;
@@ -1033,6 +1055,6 @@ void loop()
 
 void alarmBeep(int pin, int tme) {
   tone(pin, 5800, tme);
-  printTime();
+  //printTime();
   //delay(2000); 
 }

@@ -19,7 +19,7 @@ void SIC931_Config_14443a(){
 //  byte buf;
   //tx session
   RE31_SPI.writeReg(TX_CONTROL_REG, 0x5b);
-  RE31_SPI.writeReg(TX_CFG_CW_REG, 0x3f); //cw conductance  
+  RE31_SPI.writeReg(TX_CFG_CW_REG, 0x18); //cw conductance  
   RE31_SPI.writeReg(CODER_CONTROL_REG, 0x19);
   RE31_SPI.writeReg(MOD_WIDTH_REG, 0x0f);//mod width
   RE31_SPI.writeReg(MOD_WIDTH_SOF_REG, 0x0f);  //mod width sof
@@ -38,7 +38,7 @@ void SIC931_Config_14443a(){
   RE31_SPI.writeReg(CHANNEL_REDUNDANCY_REG, 0x03);//crc, no parity, preset crc lsb = 0xff, crc msb = 0xff
   RE31_SPI.writeReg(CRC_PRESET_LSB_REG, 0x63);//set rxwait
   RE31_SPI.writeReg(CRC_PRESET_MSB_REG, 0x63);//set rxwait
-  sic9310_CongifGain(0x03); // ** Gain of the last state amplifier
+  sic9310_CongifGain(0x01); // ** Gain of the last state amplifier
 }
 
 void rfOn(){
