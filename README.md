@@ -49,7 +49,7 @@ XIAO主機上具有USB Type C的接口，可以用來連接電腦使用Arduino I
 ・QUIZ GAMER 快問快答遊戲模式，以互動與語音方式，考驗聲音的記憶。
 
 
-規格與外觀尺寸
+> 規格與外觀尺寸
 
 主控核心處理器 ATSAMD21-G18/ ARM® Cortex®-M0+ 32bit 48MHz microcontroller(SAMD21G18) with 256KB Flash,32KB SRAM
 韌體開發環境 相容於Arduino IDE
