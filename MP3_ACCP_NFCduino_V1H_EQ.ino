@@ -297,8 +297,9 @@ void lowPowerHandler() {
 #ifdef DEBUG
     Serial.print("LLB detect, sensorValue ="); Serial.println(sensorValue, DEC);
 #endif
-    // Convert the analog reading (which goes from 0 - 1023) to a voltage (0 - 3.3V):
-    float voltage = sensorValue * (4.3 / 1023.0);
+    // Convert the analog reading (which goes from 0 - 1023) to a voltage (0 - 4.3V):
+    // 0.969543 is here for compensating difference between measured and AnalogRead value;
+    float voltage = (sensorValue * (4.3 / 1023.0)) * 0.969543;
     battLife = (voltage - 3.4) * 100 / (4.12-3.4);
     //battLife = voltage * 100;
     if (battLife > 100) {
