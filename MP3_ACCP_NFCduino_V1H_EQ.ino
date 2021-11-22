@@ -364,7 +364,6 @@ void setup(){
   ss = "System ready...";
   RE31_SPI.begin();
   delay(100);
-  SIC931_Config_14443a();
   if (SIC931_Check_Device() < 0) {
         sl1 = "-NFC RWD is FAIL..";
         digitalWrite(LED_R, LOW);
