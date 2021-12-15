@@ -55,3 +55,5 @@ XIAO主機上具有USB Type C的接口，可以用來連接電腦使用Arduino I
 * `NFC小唱片` XD採復古黑膠唱片縮小版的風格，為一直徑49mm圓片，其中心內置一直徑30mm彩印圓型貼標；外封套為方形54mm x 54mm
 
 NFC ACCP相關程式碼的開發與編譯，請參考 -> [Wiki](https://github.com/srluo/NFC_ACCP/wiki/2-準備篇)
+NFC ACCP電路圖，請參考 -> [PNG](https://github.com/srluo/SCH-2021-1015-1.png)
+
