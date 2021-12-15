@@ -56,4 +56,4 @@ XIAO主機上具有USB Type C的接口，可以用來連接電腦使用Arduino I
 
 NFC ACCP相關程式碼的開發與編譯，請參考 -> [Wiki](https://github.com/srluo/NFC_ACCP/wiki/2-準備篇)
 
-NFC ACCP電路圖，請參考 -> [PNG](https://github.com/srluo/NFC_ACCP/SCH-2021-1015-1.png)
+NFC ACCP電路圖，請參考 -> [PNG](https://github.com/srluo/NFC_ACCP/blob/main/SCH-2021-1015-1.png)
